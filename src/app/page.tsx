@@ -1,35 +1,31 @@
 import HeroNav from "./components/HeroNav";
+import { sanityFetch } from "@/sanity/lib/live";
+import { defineQuery } from "next-sanity";
 
 const heroPhotoUrl = "/pexels-vazhnik-7562188 2.png";
 const photoBreakUrl = "/pexels-vazhnik-7562188 3.png";
 const aboutPhotoUrl = "/image 26.png";
 
-const portfolioProjects = [
-  {
-    title: "Surfers Paradise",
-    tags: ["Social Media", "Photography"],
-    imgSrc: "https://www.figma.com/api/mcp/asset/3ac703ce-215d-4026-a0c9-bacede555ff0",
-    desktopH: "h-[744px]",
-  },
-  {
-    title: "Cyberpunk Caffe",
-    tags: ["Social Media", "Photography"],
-    imgSrc: "https://www.figma.com/api/mcp/asset/d8736ed9-cf0e-4d57-ace2-7faa01966578",
-    desktopH: "h-[699px]",
-  },
-  {
-    title: "Agency 976",
-    tags: ["Social Media", "Photography"],
-    imgSrc: "https://www.figma.com/api/mcp/asset/a14e2fc5-de97-47ba-bfeb-d161cdac38b9",
-    desktopH: "h-[699px]",
-  },
-  {
-    title: "Minimal Playground",
-    tags: ["Social Media", "Photography"],
-    imgSrc: "https://www.figma.com/api/mcp/asset/51c2c050-8e4b-4eef-84a3-9060bf86ad59",
-    desktopH: "h-[744px]",
-  },
-];
+type PortfolioItem = {
+  _id: string;
+  title: string;
+  tags: string[];
+  imageUrl: string | null;
+  desktopCardHeight: number;
+};
+
+const PORTFOLIO_QUERY = defineQuery(`
+  *[_type == "portfolio"] | order(order asc) {
+    _id,
+    title,
+    tags,
+    "imageUrl": select(
+      defined(coverImage.asset) => coverImage.asset->url,
+      externalImageUrl
+    ),
+    desktopCardHeight
+  }
+`);
 
 const testimonials = [
   {
@@ -129,7 +125,9 @@ const services = [
 const line =
   "font-[family-name:var(--font-inter)] font-light text-[32px] md:text-[6.67vw] text-black uppercase tracking-[-0.08em] leading-[0.84] whitespace-nowrap";
 
-export default function Home() {
+export default async function Home() {
+  const { data: portfolioProjects } = await sanityFetch({ query: PORTFOLIO_QUERY });
+  const p = portfolioProjects as PortfolioItem[];
   return (
     <>
     <section className="relative h-[847px] overflow-hidden bg-neutral-300">
@@ -376,10 +374,10 @@ export default function Home() {
 
       {/* Mobile: stacked cards */}
       <div className="md:hidden flex flex-col gap-6">
-        {portfolioProjects.map((project) => (
-          <div key={project.title} className="flex flex-col gap-[10px]">
+        {p.map((project) => (
+          <div key={project._id} className="flex flex-col gap-[10px]">
             <div className="relative h-[390px] overflow-hidden">
-              <img src={project.imgSrc} alt={project.title} className="absolute inset-0 w-full h-full object-cover" />
+              <img src={project.imageUrl ?? ''} alt={project.title} className="absolute inset-0 w-full h-full object-cover" />
               <div className="absolute bottom-4 left-4 flex gap-3">
                 {project.tags.map((tag) => (
                   <span key={tag} className="backdrop-blur-[10px] bg-[rgba(255,255,255,0.3)] px-2 py-1 rounded-[24px] font-[family-name:var(--font-inter)] font-medium text-[14px] text-[#111] tracking-[-0.04em]">
@@ -428,10 +426,10 @@ export default function Home() {
 
           {/* Surfers Paradise */}
           <div className="flex flex-col gap-[10px]">
-            <div className="relative h-[744px] overflow-hidden">
-              <img src={portfolioProjects[0].imgSrc} alt={portfolioProjects[0].title} className="absolute inset-0 w-full h-full object-cover" />
+            <div className="relative overflow-hidden" style={{ height: p[0]?.desktopCardHeight ?? 744 }}>
+              <img src={p[0]?.imageUrl ?? ''} alt={p[0]?.title ?? ''} className="absolute inset-0 w-full h-full object-cover" />
               <div className="absolute bottom-4 left-4 flex gap-3">
-                {portfolioProjects[0].tags.map((tag) => (
+                {(p[0]?.tags ?? []).map((tag) => (
                   <span key={tag} className="backdrop-blur-[10px] bg-[rgba(255,255,255,0.3)] px-2 py-1 rounded-[24px] font-[family-name:var(--font-inter)] font-medium text-[14px] text-[#111] tracking-[-0.04em]">
                     {tag}
                   </span>
@@ -440,7 +438,7 @@ export default function Home() {
             </div>
             <div className="flex items-center justify-between">
               <p className="font-[family-name:var(--font-inter)] font-black text-[36px] text-black uppercase tracking-[-0.04em] leading-[1.1] whitespace-nowrap">
-                {portfolioProjects[0].title}
+                {p[0]?.title}
               </p>
               <svg className="shrink-0" width="32" height="32" viewBox="0 0 32 32" fill="none">
                 <path d="M9 23L23 9M23 9H12M23 9V20" stroke="#1f1f1f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -450,10 +448,10 @@ export default function Home() {
 
           {/* Cyberpunk Caffe */}
           <div className="flex flex-col gap-[10px]">
-            <div className="relative h-[699px] overflow-hidden">
-              <img src={portfolioProjects[1].imgSrc} alt={portfolioProjects[1].title} className="absolute inset-0 w-full h-full object-cover" />
+            <div className="relative overflow-hidden" style={{ height: p[1]?.desktopCardHeight ?? 699 }}>
+              <img src={p[1]?.imageUrl ?? ''} alt={p[1]?.title ?? ''} className="absolute inset-0 w-full h-full object-cover" />
               <div className="absolute bottom-4 left-4 flex gap-3">
-                {portfolioProjects[1].tags.map((tag) => (
+                {(p[1]?.tags ?? []).map((tag) => (
                   <span key={tag} className="backdrop-blur-[10px] bg-[rgba(255,255,255,0.3)] px-2 py-1 rounded-[24px] font-[family-name:var(--font-inter)] font-medium text-[14px] text-[#111] tracking-[-0.04em]">
                     {tag}
                   </span>
@@ -462,7 +460,7 @@ export default function Home() {
             </div>
             <div className="flex items-center justify-between">
               <p className="font-[family-name:var(--font-inter)] font-black text-[36px] text-black uppercase tracking-[-0.04em] leading-[1.1] whitespace-nowrap">
-                {portfolioProjects[1].title}
+                {p[1]?.title}
               </p>
               <svg className="shrink-0" width="32" height="32" viewBox="0 0 32 32" fill="none">
                 <path d="M9 23L23 9M23 9H12M23 9V20" stroke="#1f1f1f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -497,10 +495,10 @@ export default function Home() {
 
           {/* Agency 976 */}
           <div className="flex flex-col gap-[10px]">
-            <div className="relative h-[699px] overflow-hidden">
-              <img src={portfolioProjects[2].imgSrc} alt={portfolioProjects[2].title} className="absolute inset-0 w-full h-full object-cover" />
+            <div className="relative overflow-hidden" style={{ height: p[2]?.desktopCardHeight ?? 699 }}>
+              <img src={p[2]?.imageUrl ?? ''} alt={p[2]?.title ?? ''} className="absolute inset-0 w-full h-full object-cover" />
               <div className="absolute bottom-4 left-4 flex gap-3">
-                {portfolioProjects[2].tags.map((tag) => (
+                {(p[2]?.tags ?? []).map((tag) => (
                   <span key={tag} className="backdrop-blur-[10px] bg-[rgba(255,255,255,0.3)] px-2 py-1 rounded-[24px] font-[family-name:var(--font-inter)] font-medium text-[14px] text-[#111] tracking-[-0.04em]">
                     {tag}
                   </span>
@@ -509,7 +507,7 @@ export default function Home() {
             </div>
             <div className="flex items-center justify-between">
               <p className="font-[family-name:var(--font-inter)] font-black text-[36px] text-black uppercase tracking-[-0.04em] leading-[1.1] whitespace-nowrap">
-                {portfolioProjects[2].title}
+                {p[2]?.title}
               </p>
               <svg className="shrink-0" width="32" height="32" viewBox="0 0 32 32" fill="none">
                 <path d="M9 23L23 9M23 9H12M23 9V20" stroke="#1f1f1f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -519,10 +517,10 @@ export default function Home() {
 
           {/* Minimal Playground */}
           <div className="flex flex-col gap-[10px]">
-            <div className="relative h-[744px] overflow-hidden">
-              <img src={portfolioProjects[3].imgSrc} alt={portfolioProjects[3].title} className="absolute inset-0 w-full h-full object-cover" />
+            <div className="relative overflow-hidden" style={{ height: p[3]?.desktopCardHeight ?? 744 }}>
+              <img src={p[3]?.imageUrl ?? ''} alt={p[3]?.title ?? ''} className="absolute inset-0 w-full h-full object-cover" />
               <div className="absolute bottom-4 left-4 flex gap-3">
-                {portfolioProjects[3].tags.map((tag) => (
+                {(p[3]?.tags ?? []).map((tag) => (
                   <span key={tag} className="backdrop-blur-[10px] bg-[rgba(255,255,255,0.3)] px-2 py-1 rounded-[24px] font-[family-name:var(--font-inter)] font-medium text-[14px] text-[#111] tracking-[-0.04em]">
                     {tag}
                   </span>
@@ -531,7 +529,7 @@ export default function Home() {
             </div>
             <div className="flex items-center justify-between">
               <p className="font-[family-name:var(--font-inter)] font-black text-[36px] text-black uppercase tracking-[-0.04em] leading-[1.1] whitespace-nowrap">
-                {portfolioProjects[3].title}
+                {p[3]?.title}
               </p>
               <svg className="shrink-0" width="32" height="32" viewBox="0 0 32 32" fill="none">
                 <path d="M9 23L23 9M23 9H12M23 9V20" stroke="#1f1f1f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
