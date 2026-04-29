@@ -14,6 +14,20 @@ type PortfolioItem = {
   desktopCardHeight: number;
 };
 
+type Testimonial = {
+  _id: string;
+  name: string;
+  quote: string;
+  logoSrc: string;
+  logoW: number;
+  logoH: number;
+  desktopRotate: string;
+  desktopPos: string;
+  desktopBoxW: number;
+  desktopBoxH: number;
+  mobileRotate: string;
+};
+
 const PORTFOLIO_QUERY = defineQuery(`
   *[_type == "portfolio"] | order(order asc) {
     _id,
@@ -27,52 +41,22 @@ const PORTFOLIO_QUERY = defineQuery(`
   }
 `);
 
-const testimonials = [
-  {
-    name: "Marko Stojković",
-    quote:
-      "A brilliant creative partner who transformed our vision into a unique, high-impact brand identity. Their ability to craft everything from custom mascots to polished logos is truly impressive.",
-    logoSrc: "https://www.figma.com/api/mcp/asset/3f9d15a0-82f2-4d6a-a17c-61ec090705fd",
-    logoW: 143, logoH: 19,
-    rotate: "-rotate-[6.85deg]",
-    pos: "left-[102px] top-[142px]",
-    boxW: 381, boxH: 295,
-    mobileRotate: "-rotate-[3.5deg]",
-  },
-  {
-    name: "Lukas Weber",
-    quote:
-      "Professional, precise, and incredibly fast at handling complex product visualizations and templates.",
-    logoSrc: "https://www.figma.com/api/mcp/asset/0b7269d9-8a90-43ae-aa35-8e7333d14170",
-    logoW: 138, logoH: 19,
-    rotate: "rotate-[2.9deg]",
-    pos: "left-[676px] top-[272px]",
-    boxW: 362, boxH: 204,
-    mobileRotate: "rotate-[2deg]",
-  },
-  {
-    name: "Sarah Jenkins",
-    quote:
-      "A strategic partner who balances stunning aesthetics with high-performance UX for complex platforms. They don't just make things look good; they solve business problems through visual clarity.",
-    logoSrc: "https://www.figma.com/api/mcp/asset/04f0404b-8e55-49d6-a254-c07b6b53c83a",
-    logoW: 109, logoH: 31,
-    rotate: "rotate-[2.23deg]",
-    pos: "left-[305px] top-[553px]",
-    boxW: 363, boxH: 280,
-    mobileRotate: "-rotate-[2deg]",
-  },
-  {
-    name: "Sofia Martínez",
-    quote:
-      "An incredibly versatile designer who delivers consistent quality across a wide range of styles and formats.",
-    logoSrc: "https://www.figma.com/api/mcp/asset/3f32b9c9-103d-4496-aca2-c29d9437811b",
-    logoW: 81, logoH: 36,
-    rotate: "-rotate-[4.15deg]",
-    pos: "left-[987px] top-[546px]",
-    boxW: 367, boxH: 228,
-    mobileRotate: "rotate-[2deg]",
-  },
-];
+const TESTIMONIALS_QUERY = defineQuery(`
+  *[_type == "testimonial"] | order(order asc) {
+    _id,
+    name,
+    quote,
+    logoSrc,
+    logoW,
+    logoH,
+    desktopRotate,
+    desktopPos,
+    desktopBoxW,
+    desktopBoxH,
+    mobileRotate
+  }
+`);
+
 
 const newsArticles = [
   {
@@ -126,8 +110,12 @@ const line =
   "font-[family-name:var(--font-inter)] font-light text-[32px] md:text-[6.67vw] text-black uppercase tracking-[-0.08em] leading-[0.84] whitespace-nowrap";
 
 export default async function Home() {
-  const { data: portfolioProjects } = await sanityFetch({ query: PORTFOLIO_QUERY });
+  const [{ data: portfolioProjects }, { data: testimonialDocs }] = await Promise.all([
+    sanityFetch({ query: PORTFOLIO_QUERY }),
+    sanityFetch({ query: TESTIMONIALS_QUERY }),
+  ]);
   const p = portfolioProjects as PortfolioItem[];
+  const testimonials = testimonialDocs as Testimonial[];
   return (
     <>
     <section className="relative h-[847px] overflow-hidden bg-neutral-300">
@@ -553,7 +541,7 @@ export default async function Home() {
         <div className="flex gap-4 overflow-x-auto px-4 pb-4 items-start">
           {testimonials.map((t) => (
             <div
-              key={t.name}
+              key={t._id}
               className={`${t.mobileRotate} shrink-0 w-[260px] bg-[#f1f1f1] border border-[#ddd] rounded-[4px] p-6 flex flex-col gap-4`}
             >
               <img
@@ -585,11 +573,11 @@ export default async function Home() {
             // Outer wrapper holds the rotated card's bounding box so the card
             // lands at Figma's exact coordinates regardless of text height.
             <div
-              key={t.name}
-              className={`absolute ${t.pos} flex items-center justify-center`}
-              style={{ width: t.boxW, height: t.boxH }}
+              key={t._id}
+              className={`absolute ${t.desktopPos} flex items-center justify-center`}
+              style={{ width: t.desktopBoxW, height: t.desktopBoxH }}
             >
-              <div className={`flex-none ${t.rotate}`}>
+              <div className={`flex-none ${t.desktopRotate}`}>
                 <div className="w-[353px] bg-[#f1f1f1] border border-[#ddd] rounded-[4px] p-6 flex flex-col gap-4">
                   <img
                     src={t.logoSrc}
