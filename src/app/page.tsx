@@ -105,6 +105,18 @@ const services = [
   },
 ];
 
+function parseDesktopPos(s: string): { left: number; top: number } {
+  const l = s.match(/left-\[(\d+(?:\.\d+)?)px\]/);
+  const t = s.match(/top-\[(\d+(?:\.\d+)?)px\]/);
+  return { left: l ? parseFloat(l[1]) : 0, top: t ? parseFloat(t[1]) : 0 };
+}
+
+function parseRotateDeg(s: string): number {
+  const m = s.match(/rotate-\[(\d+(?:\.\d+)?)deg\]/);
+  if (!m) return 0;
+  return s.startsWith('-') ? -parseFloat(m[1]) : parseFloat(m[1]);
+}
+
 // Shared text classes for the large editorial lines
 const line =
   "font-[family-name:var(--font-inter)] font-light text-[32px] md:text-[6.67vw] text-black uppercase tracking-[-0.08em] leading-[0.84] whitespace-nowrap";
@@ -542,7 +554,8 @@ export default async function Home() {
           {testimonials.map((t) => (
             <div
               key={t._id}
-              className={`${t.mobileRotate} shrink-0 w-[260px] bg-[#f1f1f1] border border-[#ddd] rounded-[4px] p-6 flex flex-col gap-4`}
+              className="shrink-0 w-[260px] bg-[#f1f1f1] border border-[#ddd] rounded-[4px] p-6 flex flex-col gap-4"
+              style={{ transform: `rotate(${parseRotateDeg(t.mobileRotate ?? '')}deg)` }}
             >
               <img
                 src={t.logoSrc}
@@ -569,33 +582,35 @@ export default async function Home() {
           <h2 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap font-[family-name:var(--font-inter)] font-medium text-[198px] text-black capitalize tracking-[-0.07em] leading-[1.1] pointer-events-none select-none">
             Testimonials
           </h2>
-          {testimonials.map((t) => (
-            // Outer wrapper holds the rotated card's bounding box so the card
-            // lands at Figma's exact coordinates regardless of text height.
-            <div
-              key={t._id}
-              className={`absolute ${t.desktopPos} flex items-center justify-center`}
-              style={{ width: t.desktopBoxW, height: t.desktopBoxH }}
-            >
-              <div className={`flex-none ${t.desktopRotate}`}>
-                <div className="w-[353px] bg-[#f1f1f1] border border-[#ddd] rounded-[4px] p-6 flex flex-col gap-4">
-                  <img
-                    src={t.logoSrc}
-                    alt=""
-                    aria-hidden="true"
-                    style={{ width: t.logoW, height: t.logoH }}
-                    className="shrink-0 object-contain object-left"
-                  />
-                  <p className="font-[family-name:var(--font-inter)] font-normal text-[18px] text-[#1f1f1f] leading-[1.3] tracking-[-0.04em]">
-                    {t.quote}
-                  </p>
-                  <p className="font-[family-name:var(--font-inter)] font-black text-[16px] text-black uppercase tracking-[-0.04em] leading-[1.1] whitespace-nowrap">
-                    {t.name}
-                  </p>
+          {testimonials.map((t) => {
+            const pos = parseDesktopPos(t.desktopPos ?? '');
+            const deg = parseRotateDeg(t.desktopRotate ?? '');
+            return (
+              <div
+                key={t._id}
+                className="absolute flex items-center justify-center"
+                style={{ left: pos.left, top: pos.top, width: t.desktopBoxW, height: t.desktopBoxH }}
+              >
+                <div className="flex-none" style={{ transform: `rotate(${deg}deg)` }}>
+                  <div className="w-[353px] bg-[#f1f1f1] border border-[#ddd] rounded-[4px] p-6 flex flex-col gap-4">
+                    <img
+                      src={t.logoSrc}
+                      alt=""
+                      aria-hidden="true"
+                      style={{ width: t.logoW, height: t.logoH }}
+                      className="shrink-0 object-contain object-left"
+                    />
+                    <p className="font-[family-name:var(--font-inter)] font-normal text-[18px] text-[#1f1f1f] leading-[1.3] tracking-[-0.04em]">
+                      {t.quote}
+                    </p>
+                    <p className="font-[family-name:var(--font-inter)] font-black text-[16px] text-black uppercase tracking-[-0.04em] leading-[1.1] whitespace-nowrap">
+                      {t.name}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
