@@ -38,6 +38,14 @@ type NewsItem = {
   publishedAt: string | null;
 };
 
+type ServiceItem = {
+  _id: string;
+  name: string;
+  description: string;
+  imageUrl: string | null;
+  order: number;
+};
+
 const PORTFOLIO_QUERY = defineQuery(`
   *[_type == "portfolio"] | order(order asc) {
     _id,
@@ -78,38 +86,21 @@ const NEWS_QUERY = defineQuery(`
   }
 `);
 
+const SERVICES_QUERY = defineQuery(`
+  *[_type == "service"] | order(order asc) {
+    _id,
+    name,
+    description,
+    "imageUrl": select(
+      defined(image.asset) => image.asset->url,
+      externalImageUrl
+    ),
+    order
+  }
+`);
 
 
-const services = [
-  {
-    number: "[ 1 ]",
-    name: "Brand Discovery",
-    description:
-      "Placeholder description of this service. Explain the value you provide and the outcomes clients can expect. Keep it to two or three sentences.",
-    imgSrc: "/services/brand-discovery.jpg",
-  },
-  {
-    number: "[ 2 ]",
-    name: "Web Design & Dev",
-    description:
-      "Placeholder description of this service. Explain the value you provide and the outcomes clients can expect. Keep it to two or three sentences.",
-    imgSrc: "/services/web-design.jpg",
-  },
-  {
-    number: "[ 3 ]",
-    name: "Marketing",
-    description:
-      "Placeholder description of this service. Explain the value you provide and the outcomes clients can expect. Keep it to two or three sentences.",
-    imgSrc: "/services/marketing.jpg",
-  },
-  {
-    number: "[ 4 ]",
-    name: "Photography",
-    description:
-      "Placeholder description of this service. Explain the value you provide and the outcomes clients can expect. Keep it to two or three sentences.",
-    imgSrc: "/services/photography.jpg",
-  },
-];
+
 
 function parseDesktopPos(s: string): { left: number; top: number } {
   const l = s.match(/left-\[(\d+(?:\.\d+)?)px\]/);
@@ -128,14 +119,16 @@ const line =
   "font-[family-name:var(--font-inter)] font-light text-[32px] md:text-[6.67vw] text-black uppercase tracking-[-0.08em] leading-[0.84] whitespace-nowrap";
 
 export default async function Home() {
-  const [{ data: portfolioProjects }, { data: testimonialDocs }, { data: newsDocs }] = await Promise.all([
+  const [{ data: portfolioProjects }, { data: testimonialDocs }, { data: newsDocs }, { data: serviceDocs }] = await Promise.all([
     sanityFetch({ query: PORTFOLIO_QUERY }),
     sanityFetch({ query: TESTIMONIALS_QUERY }),
     sanityFetch({ query: NEWS_QUERY }),
+    sanityFetch({ query: SERVICES_QUERY }),
   ]);
   const p = portfolioProjects as PortfolioItem[];
   const testimonials = testimonialDocs as Testimonial[];
   const newsArticles = newsDocs as NewsItem[];
+  const services = serviceDocs as ServiceItem[];
   return (
     <>
     <section className="relative h-[847px] overflow-hidden bg-neutral-300">
@@ -310,18 +303,18 @@ export default async function Home() {
         </p>
         <div className="flex items-center justify-between">
           <span className="font-[family-name:var(--font-inter)] font-light text-[32px] md:text-[96px] text-white uppercase tracking-[-0.08em] leading-none">
-            [4]
+            [{services.length}]
           </span>
           <span className="font-[family-name:var(--font-inter)] font-light text-[32px] md:text-[96px] text-white uppercase tracking-[-0.08em] leading-none">
             Deliverables
           </span>
         </div>
         <div className="flex flex-col gap-12">
-          {services.map((service) => (
-            <div key={service.number} className="flex flex-col gap-[9px]">
+          {services.map((service, i) => (
+            <div key={service._id} className="flex flex-col gap-[9px]">
               <div className="flex flex-col gap-[9px]">
                 <p className="font-[family-name:var(--font-geist-mono)] text-[14px] text-white uppercase leading-[1.1]">
-                  {service.number}
+                  {`[ ${i + 1} ]`}
                 </p>
                 <div className="h-px w-full bg-white" />
               </div>
@@ -333,14 +326,16 @@ export default async function Home() {
                   <p className="font-[family-name:var(--font-inter)] text-[14px] text-white leading-[1.3] tracking-[-0.04em] md:w-[393px]">
                     {service.description}
                   </p>
-                  <div className="w-[151px] h-[151px] shrink-0 overflow-hidden">
-                    <img
-                      src={service.imgSrc}
-                      alt=""
-                      aria-hidden="true"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
+                  {service.imageUrl && (
+                    <div className="w-[151px] h-[151px] shrink-0 overflow-hidden">
+                      <img
+                        src={service.imageUrl}
+                        alt=""
+                        aria-hidden="true"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
