@@ -28,6 +28,15 @@ type Testimonial = {
   mobileRotate: string;
 };
 
+type NewsItem = {
+  _id: string;
+  title: string;
+  description: string;
+  imageUrl: string;
+  link: string | null;
+  publishedAt: string | null;
+};
+
 const PORTFOLIO_QUERY = defineQuery(`
   *[_type == "portfolio"] | order(order asc) {
     _id,
@@ -57,22 +66,18 @@ const TESTIMONIALS_QUERY = defineQuery(`
   }
 `);
 
+const NEWS_QUERY = defineQuery(`
+  *[_type == "news"] | order(order asc) {
+    _id,
+    title,
+    description,
+    imageUrl,
+    link,
+    publishedAt
+  }
+`);
 
-const newsArticles = [
-  {
-    imgSrc: "https://www.figma.com/api/mcp/asset/c75f27e8-8c1a-415f-b3bf-c045c6383b29",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-  },
-  {
-    imgSrc: "https://www.figma.com/api/mcp/asset/ed65031c-10f1-4236-8480-7b3f3eea085f",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-  },
-  {
-    imgSrc: "https://www.figma.com/api/mcp/asset/ccdf7efb-4cdd-4e18-87fd-1ba10b154b1c",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-  },
-];
-const newsArrowUrl = "https://www.figma.com/api/mcp/asset/f0efc48e-5a44-4bcd-ada0-525bc41bbb8d";
+
 
 const services = [
   {
@@ -122,12 +127,14 @@ const line =
   "font-[family-name:var(--font-inter)] font-light text-[32px] md:text-[6.67vw] text-black uppercase tracking-[-0.08em] leading-[0.84] whitespace-nowrap";
 
 export default async function Home() {
-  const [{ data: portfolioProjects }, { data: testimonialDocs }] = await Promise.all([
+  const [{ data: portfolioProjects }, { data: testimonialDocs }, { data: newsDocs }] = await Promise.all([
     sanityFetch({ query: PORTFOLIO_QUERY }),
     sanityFetch({ query: TESTIMONIALS_QUERY }),
+    sanityFetch({ query: NEWS_QUERY }),
   ]);
   const p = portfolioProjects as PortfolioItem[];
   const testimonials = testimonialDocs as Testimonial[];
+  const newsArticles = newsDocs as NewsItem[];
   return (
     <>
     <section className="relative h-[847px] overflow-hidden bg-neutral-300">
@@ -625,18 +632,20 @@ export default async function Home() {
           {`Keep up with my latest news & achievements`}
         </h2>
         <div className="flex gap-4 overflow-x-auto pb-2 -mr-4">
-          {newsArticles.map((article, i) => (
-            <div key={i} className="shrink-0 w-[300px] flex flex-col gap-4">
+          {newsArticles.map((article) => (
+            <div key={article._id} className="shrink-0 w-[300px] flex flex-col gap-4">
               <div className="relative h-[398px] overflow-hidden shrink-0">
-                <img src={article.imgSrc} alt="" aria-hidden="true" className="absolute inset-0 w-full h-full object-cover" />
+                <img src={article.imageUrl} alt={article.title} className="absolute inset-0 w-full h-full object-cover" />
               </div>
               <p className="font-[family-name:var(--font-inter)] font-normal text-[14px] text-[#1f1f1f] leading-[1.3] tracking-[-0.04em]">
                 {article.description}
               </p>
-              <div className="border-b border-black flex items-center gap-[10px] py-[4px] w-fit shrink-0">
-                <span className="font-[family-name:var(--font-inter)] font-medium text-[14px] text-black tracking-[-0.04em]">Read more</span>
-                <img src={newsArrowUrl} alt="" aria-hidden="true" className="w-[18px] h-[18px] shrink-0 -rotate-90" />
-              </div>
+              {article.link && (
+                <a href={article.link} target="_blank" rel="noopener noreferrer" className="border-b border-black flex items-center gap-[10px] py-[4px] w-fit shrink-0">
+                  <span className="font-[family-name:var(--font-inter)] font-medium text-[14px] text-black tracking-[-0.04em]">Read more</span>
+                  <svg className="w-[18px] h-[18px] shrink-0 -rotate-90" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M9 3.75L9 14.25M9 14.25L13.5 9.75M9 14.25L4.5 9.75" stroke="black" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                </a>
+              )}
             </div>
           ))}
         </div>
@@ -655,43 +664,23 @@ export default async function Home() {
         </div>
         {/* Article cards */}
         <div className="flex items-start">
-          {/* Card 1 */}
-          <div className="w-[353px] shrink-0 flex flex-col gap-4 h-[581px]">
-            <div className="relative h-[469px] overflow-hidden shrink-0">
-              <img src={newsArticles[0].imgSrc} alt="" aria-hidden="true" className="absolute inset-0 w-full h-full object-cover" />
-            </div>
-            <p className="flex-1 font-[family-name:var(--font-inter)] font-normal text-[14px] text-[#1f1f1f] leading-[1.3] tracking-[-0.04em]">{newsArticles[0].description}</p>
-            <div className="border-b border-black flex items-center gap-[10px] py-[4px] w-fit shrink-0">
-              <span className="font-[family-name:var(--font-inter)] font-medium text-[14px] text-black tracking-[-0.04em]">Read more</span>
-              <img src={newsArrowUrl} alt="" aria-hidden="true" className="w-[18px] h-[18px] shrink-0 -rotate-90" />
-            </div>
-          </div>
-          {/* Separator */}
-          <div className="self-stretch w-px bg-black mx-[15px] shrink-0" />
-          {/* Card 2 — offset down */}
-          <div className="w-[353px] shrink-0 flex flex-col gap-4 pt-[120px]">
-            <div className="relative h-[469px] overflow-hidden shrink-0">
-              <img src={newsArticles[1].imgSrc} alt="" aria-hidden="true" className="absolute inset-0 w-full h-full object-cover" />
-            </div>
-            <p className="font-[family-name:var(--font-inter)] font-normal text-[14px] text-[#1f1f1f] leading-[1.3] tracking-[-0.04em]">{newsArticles[1].description}</p>
-            <div className="border-b border-black flex items-center gap-[10px] py-[4px] w-fit shrink-0">
-              <span className="font-[family-name:var(--font-inter)] font-medium text-[14px] text-black tracking-[-0.04em]">Read more</span>
-              <img src={newsArrowUrl} alt="" aria-hidden="true" className="w-[18px] h-[18px] shrink-0 -rotate-90" />
-            </div>
-          </div>
-          {/* Separator */}
-          <div className="self-stretch w-px bg-black mx-[15px] shrink-0" />
-          {/* Card 3 */}
-          <div className="w-[353px] shrink-0 flex flex-col gap-4 h-[581px]">
-            <div className="relative h-[469px] overflow-hidden shrink-0">
-              <img src={newsArticles[2].imgSrc} alt="" aria-hidden="true" className="absolute inset-0 w-full h-full object-cover" />
-            </div>
-            <p className="flex-1 font-[family-name:var(--font-inter)] font-normal text-[14px] text-[#1f1f1f] leading-[1.3] tracking-[-0.04em]">{newsArticles[2].description}</p>
-            <div className="border-b border-black flex items-center gap-[10px] py-[4px] w-fit shrink-0">
-              <span className="font-[family-name:var(--font-inter)] font-medium text-[14px] text-black tracking-[-0.04em]">Read more</span>
-              <img src={newsArrowUrl} alt="" aria-hidden="true" className="w-[18px] h-[18px] shrink-0 -rotate-90" />
-            </div>
-          </div>
+          {newsArticles.slice(0, 3).map((article, i) => (
+            <>
+              {i > 0 && <div key={`sep-${article._id}`} className="self-stretch w-px bg-black mx-[15px] shrink-0" />}
+              <div key={article._id} className={`w-[353px] shrink-0 flex flex-col gap-4 ${i === 1 ? 'pt-[120px]' : 'h-[581px]'}`}>
+                <div className="relative h-[469px] overflow-hidden shrink-0">
+                  <img src={article.imageUrl} alt={article.title} className="absolute inset-0 w-full h-full object-cover" />
+                </div>
+                <p className="flex-1 font-[family-name:var(--font-inter)] font-normal text-[14px] text-[#1f1f1f] leading-[1.3] tracking-[-0.04em]">{article.description}</p>
+                {article.link && (
+                  <a href={article.link} target="_blank" rel="noopener noreferrer" className="border-b border-black flex items-center gap-[10px] py-[4px] w-fit shrink-0">
+                    <span className="font-[family-name:var(--font-inter)] font-medium text-[14px] text-black tracking-[-0.04em]">Read more</span>
+                    <svg className="w-[18px] h-[18px] shrink-0 -rotate-90" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M9 3.75L9 14.25M9 14.25L13.5 9.75M9 14.25L4.5 9.75" stroke="black" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  </a>
+                )}
+              </div>
+            </>
+          ))}
         </div>
       </div>
 
