@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import HeroNav from "./components/HeroNav";
 import { sanityFetch } from "@/sanity/lib/live";
 import { defineQuery } from "next-sanity";
@@ -665,9 +666,9 @@ export default async function Home() {
         {/* Article cards */}
         <div className="flex items-start">
           {newsArticles.slice(0, 3).map((article, i) => (
-            <>
-              {i > 0 && <div key={`sep-${article._id}`} className="self-stretch w-px bg-black mx-[15px] shrink-0" />}
-              <div key={article._id} className={`w-[353px] shrink-0 flex flex-col gap-4 ${i === 1 ? 'pt-[120px]' : 'h-[581px]'}`}>
+            <Fragment key={article._id}>
+              {i > 0 && <div className="self-stretch w-px bg-black mx-[15px] shrink-0" />}
+              <div className={`w-[353px] shrink-0 flex flex-col gap-4 ${i === 1 ? 'pt-[120px]' : 'h-[581px]'}`}>
                 <div className="relative h-[469px] overflow-hidden shrink-0">
                   <img src={article.imageUrl} alt={article.title} className="absolute inset-0 w-full h-full object-cover" />
                 </div>
@@ -679,7 +680,7 @@ export default async function Home() {
                   </a>
                 )}
               </div>
-            </>
+            </Fragment>
           ))}
         </div>
       </div>
