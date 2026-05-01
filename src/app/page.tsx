@@ -1,5 +1,7 @@
 import { Fragment } from "react";
 import HeroNav from "./components/HeroNav";
+import TestimonialsSlider from "./components/TestimonialsSlider";
+import MagneticButton from "./components/MagneticButton";
 import { sanityFetch } from "@/sanity/lib/live";
 import { defineQuery } from "next-sanity";
 
@@ -150,26 +152,24 @@ export default async function Home() {
       />
 
       {/* Foreground layout */}
-      <div className="relative flex h-full flex-col px-4 md:px-8 justify-between md:justify-start md:gap-[240px]">
+      <div className="relative flex h-full flex-col px-4 md:px-8 justify-between pb-6 md:pb-0 md:justify-start md:gap-[240px]">
 
         <HeroNav />
 
         {/* Hero text */}
-        <div className="flex w-full shrink-0 flex-col pb-6 md:pb-0">
+        <div className="flex w-full shrink-0 flex-col h-[341px] justify-between md:h-auto md:justify-start">
           {/* Name heading */}
           <div className="flex w-full flex-col items-center md:items-start">
-            {/* Label — opacity keeps it ghostly on light photo backgrounds */}
             <span className="mb-[-15px] px-[18px] font-[family-name:var(--font-geist-mono)] text-[14px] uppercase leading-[1.1] text-white opacity-70 mix-blend-overlay">
               [ Hello I&apos;m ]
             </span>
-            {/* Heading — vw-based size so it scales without wrapping on desktop */}
             <h1 className="mb-[-15px] w-full text-center font-[family-name:var(--font-inter)] font-medium capitalize tracking-[-0.07em] text-white mix-blend-overlay whitespace-pre-wrap leading-[0.8] text-[96px] md:text-[13.75vw] md:leading-[1.1] md:whitespace-pre">
               {`Harvey   Specter`}
             </h1>
           </div>
 
-          {/* Blurb — right on desktop, centered on mobile */}
-          <div className="flex w-full justify-center pt-[15px] md:justify-end">
+          {/* Blurb — centered on mobile, right on desktop */}
+          <div className="flex w-full justify-center md:justify-end">
             <div className="flex w-[294px] flex-col gap-[17px]">
               <p className="font-[family-name:var(--font-inter)] font-bold italic text-sm uppercase leading-[1.1] tracking-[-0.04em] text-[#1f1f1f]">
                 H.Studio is a{" "}
@@ -180,9 +180,9 @@ export default async function Home() {
                 design and art group specializing in branding, web design and
                 engineering.
               </p>
-              <button className="self-start rounded-full bg-black px-4 py-3 font-[family-name:var(--font-inter)] font-medium text-sm text-white tracking-[-0.04em]">
+              <MagneticButton className="self-start rounded-full bg-black px-4 py-3 font-[family-name:var(--font-inter)] font-medium text-sm text-white tracking-[-0.04em]">
                 Let&apos;s talk
-              </button>
+              </MagneticButton>
             </div>
           </div>
         </div>
@@ -190,7 +190,7 @@ export default async function Home() {
     </section>
 
     {/* ── Editorial identity section ── */}
-    <section className="bg-[#fafafa] px-4 py-12 md:px-8 md:py-[120px]">
+    <section className="bg-white px-4 py-12 md:px-8 md:py-[120px]">
       <div className="flex flex-col gap-6 w-full">
 
         {/* [ 8+ years in industry ] + hairline */}
@@ -410,9 +410,9 @@ export default async function Home() {
             <p className="font-[family-name:var(--font-inter)] italic text-[14px] text-[#1f1f1f] leading-[1.3] tracking-[-0.04em]">
               Discover how my creativity transforms ideas into impactful digital experiences — schedule a call with me to get started.
             </p>
-            <button className="self-start rounded-[24px] bg-black px-4 py-3 font-[family-name:var(--font-inter)] font-medium text-[14px] text-white tracking-[-0.04em]">
+            <MagneticButton className="self-start rounded-[24px] bg-black px-4 py-3 font-[family-name:var(--font-inter)] font-medium text-[14px] text-white tracking-[-0.04em]">
               Let&apos;s talk
-            </button>
+            </MagneticButton>
           </div>
           <div className="flex flex-col justify-between shrink-0">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M0 0H16V16" stroke="#1f1f1f"/></svg>
@@ -553,29 +553,7 @@ export default async function Home() {
         <h2 className="px-4 text-center font-[family-name:var(--font-inter)] font-medium text-[64px] text-black capitalize tracking-[-0.07em] leading-[0.8]">
           Testimonials
         </h2>
-        <div className="flex gap-4 overflow-x-auto px-4 pb-4 items-start">
-          {testimonials.map((t) => (
-            <div
-              key={t._id}
-              className="shrink-0 w-[260px] bg-[#f1f1f1] border border-[#ddd] rounded-[4px] p-6 flex flex-col gap-4"
-              style={{ transform: `rotate(${parseRotateDeg(t.mobileRotate ?? '')}deg)` }}
-            >
-              <img
-                src={t.logoSrc}
-                alt=""
-                aria-hidden="true"
-                style={{ width: t.logoW, height: t.logoH }}
-                className="shrink-0 object-contain object-left"
-              />
-              <p className="font-[family-name:var(--font-inter)] font-normal text-[18px] text-[#1f1f1f] leading-[1.3] tracking-[-0.04em]">
-                {t.quote}
-              </p>
-              <p className="font-[family-name:var(--font-inter)] font-black text-[16px] text-black uppercase tracking-[-0.04em] leading-[1.1] whitespace-nowrap">
-                {t.name}
-              </p>
-            </div>
-          ))}
-        </div>
+        <TestimonialsSlider testimonials={testimonials} />
       </div>
 
       {/* Desktop layout — fixed 1440 design canvas; title centered, cards
@@ -698,9 +676,9 @@ export default async function Home() {
               <span className="font-black not-italic">project</span>
               {" "}in mind?
             </p>
-            <button className="self-start border border-white rounded-[24px] px-4 py-3 font-[family-name:var(--font-inter)] font-medium text-[14px] text-white tracking-[-0.04em]">
+            <MagneticButton className="self-start border border-white rounded-[24px] px-4 py-3 font-[family-name:var(--font-inter)] font-medium text-[14px] text-white tracking-[-0.04em]">
               Let&apos;s talk
-            </button>
+            </MagneticButton>
           </div>
 
           {/* Socials — mobile: stacked list */}
