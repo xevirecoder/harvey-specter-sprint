@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import MagneticButton from "./MagneticButton";
@@ -11,12 +11,30 @@ const navLinks = ["About", "Services", "Projects", "News", "Contact"];
 
 export default function HeroNav() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isDark, setIsDark] = useState(false);
 
-  const overlayRef   = useRef<HTMLDivElement>(null);
+  const fixedNavRef   = useRef<HTMLElement>(null);
+  const overlayRef    = useRef<HTMLDivElement>(null);
   const menuHeaderRef = useRef<HTMLDivElement>(null);
   const menuLinksRef  = useRef<(HTMLAnchorElement | null)[]>([]);
   const menuCtaRef    = useRef<HTMLButtonElement>(null);
   const tlRef         = useRef<gsap.core.Timeline | null>(null);
+
+  useEffect(() => {
+    const check = () => {
+      const navH = fixedNavRef.current?.offsetHeight ?? 72;
+      const darkSections = document.querySelectorAll("[data-navbar-dark]");
+      let dark = false;
+      darkSections.forEach((el) => {
+        const r = el.getBoundingClientRect();
+        if (r.top < navH && r.bottom > 0) dark = true;
+      });
+      setIsDark(dark);
+    };
+    window.addEventListener("scroll", check, { passive: true });
+    check();
+    return () => window.removeEventListener("scroll", check);
+  }, []);
 
   useGSAP(() => {
     if (!overlayRef.current) return;
@@ -58,24 +76,27 @@ export default function HeroNav() {
 
   const onLinkEnter = (e: React.MouseEvent<HTMLAnchorElement>) => {
     gsap.to(e.currentTarget.querySelector(".nav-underline"), {
-      scaleX: 1, duration: 0.3, ease: "power2.out",
+      width: "100%", duration: 0.3, ease: "power2.out",
     });
   };
   const onLinkLeave = (e: React.MouseEvent<HTMLAnchorElement>) => {
     gsap.to(e.currentTarget.querySelector(".nav-underline"), {
-      scaleX: 0, duration: 0.25, ease: "power2.inOut",
+      width: 0, duration: 0.25, ease: "power2.inOut",
     });
   };
 
   return (
     <>
-      <nav className="flex shrink-0 items-center justify-between py-6">
-        <span className="font-[family-name:var(--font-inter)] font-semibold text-base capitalize tracking-[-0.04em] text-black">
+      <nav
+        ref={fixedNavRef}
+        className={`fixed top-0 left-0 right-0 z-50 flex shrink-0 items-center justify-between py-6 px-4 md:px-8 transition-colors duration-300 ${isDark ? "text-white" : "text-black"}`}
+      >
+        <span className="font-[family-name:var(--font-inter)] font-semibold text-base capitalize tracking-[-0.04em]">
           H.Studio
         </span>
 
         {/* Desktop links */}
-        <div className="hidden md:flex items-center gap-14 font-[family-name:var(--font-inter)] font-semibold text-base capitalize tracking-[-0.04em] text-black">
+        <div className="hidden md:flex items-center gap-14 font-[family-name:var(--font-inter)] font-semibold text-base capitalize tracking-[-0.04em]">
           {navLinks.map((link) => (
             <a
               key={link}
@@ -85,22 +106,23 @@ export default function HeroNav() {
               onMouseLeave={onLinkLeave}
             >
               {link}
-              <span
-                className="nav-underline absolute bottom-0 left-0 h-px w-full bg-current"
-                style={{ transform: "scaleX(0)", transformOrigin: "left" }}
-              />
+              <span className="nav-underline absolute bottom-0 left-0 h-px w-0 bg-current" />
             </a>
           ))}
         </div>
 
         {/* Desktop CTA */}
-        <MagneticButton className="hidden md:inline-flex items-center justify-center rounded-full bg-black px-4 py-3 font-[family-name:var(--font-inter)] font-medium text-sm text-white tracking-[-0.04em]">
+        <MagneticButton
+          className={`hidden md:inline-flex items-center justify-center rounded-full px-4 py-3 font-[family-name:var(--font-inter)] font-medium text-sm tracking-[-0.04em] transition-colors duration-300 ${
+            isDark ? "bg-white text-black" : "bg-black text-white"
+          }`}
+        >
           Let&apos;s talk
         </MagneticButton>
 
         {/* Mobile hamburger */}
         <button
-          className="md:hidden text-black"
+          className="md:hidden"
           aria-label="Open navigation"
           onClick={() => setMenuOpen(true)}
         >
@@ -109,6 +131,11 @@ export default function HeroNav() {
           </svg>
         </button>
       </nav>
+
+      {/* Invisible spacer — keeps the hero section's flex layout intact */}
+      <div className="shrink-0 flex items-center py-6 opacity-0 pointer-events-none select-none" aria-hidden="true">
+        <span className="font-[family-name:var(--font-inter)] font-semibold text-base">H.Studio</span>
+      </div>
 
       {/* Mobile menu overlay */}
       {menuOpen && (
