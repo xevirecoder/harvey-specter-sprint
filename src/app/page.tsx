@@ -2,6 +2,8 @@ import { Fragment } from "react";
 import HeroSection from "./components/HeroSection";
 import EditorialSection from "./components/EditorialSection";
 import AboutPhoto from "./components/AboutPhoto";
+import AboutBioBox from "./components/AboutBioBox";
+import PhotoBreakSection from "./components/PhotoBreakSection";
 import TestimonialsSlider from "./components/TestimonialsSlider";
 import MagneticButton from "./components/MagneticButton";
 import { sanityFetch } from "@/sanity/lib/live";
@@ -149,19 +151,7 @@ export default async function Home() {
         <div className="flex flex-col gap-8 md:flex-row md:items-end md:gap-8">
 
           {/* Bio text with corner-bracket decoration */}
-          <div className="flex items-stretch gap-3 md:max-w-[300px]">
-            <div className="flex flex-col justify-between shrink-0">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M16 0H0V16" stroke="#1f1f1f"/></svg>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M16 16H0V0" stroke="#1f1f1f"/></svg>
-            </div>
-            <p className="flex-1 font-[family-name:var(--font-inter)] text-[14px] text-[#1f1f1f] leading-[1.3] tracking-[-0.04em] py-3">
-              Placeholder paragraph one. This is where you introduce yourself — your background, your passion for your craft, and what drives you creatively. Two to three sentences work best here. Placeholder paragraph two. Here you can describe your technical approach, how you collaborate with clients, or what sets your work apart from others in your field.
-            </p>
-            <div className="flex flex-col justify-between shrink-0">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M0 0H16V16" stroke="#1f1f1f"/></svg>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M0 16H16V0" stroke="#1f1f1f"/></svg>
-            </div>
-          </div>
+          <AboutBioBox />
 
           {/* 002 (desktop only) + portrait photo */}
           <div className="flex items-start gap-6 shrink-0">
@@ -173,15 +163,7 @@ export default async function Home() {
       </div>
     </section>
 
-    {/* ── Full-bleed photo break ── */}
-    <section data-navbar-dark="true" className="relative h-[565px] md:h-[900px] overflow-hidden">
-      <img
-        src={photoBreakUrl}
-        alt=""
-        aria-hidden="true"
-        className="absolute inset-0 h-full w-full object-cover object-[62%_center] md:object-[50%_30%]"
-      />
-    </section>
+    <PhotoBreakSection src={photoBreakUrl} />
 
     {/* ── Services section ── */}
     <section data-navbar-dark="true" className="bg-black px-4 py-12 md:px-8 md:py-20">
