@@ -36,6 +36,41 @@ export const portfolioType = defineType({
       description: 'Fallback image URL used until a Sanity-hosted image is uploaded',
     }),
     defineField({
+      name: 'description',
+      title: 'Description',
+      type: 'text',
+      rows: 4,
+    }),
+    defineField({
+      name: 'client',
+      title: 'Client',
+      type: 'string',
+    }),
+    defineField({
+      name: 'year',
+      title: 'Year',
+      type: 'number',
+    }),
+    defineField({
+      name: 'gallery',
+      title: 'Gallery Images',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            defineField({ name: 'image', title: 'Image', type: 'image', options: { hotspot: true } }),
+            defineField({ name: 'externalUrl', title: 'External Image URL', type: 'url' }),
+            defineField({ name: 'caption', title: 'Caption', type: 'string' }),
+          ],
+          preview: {
+            select: { title: 'caption', media: 'image' },
+            prepare({ title }: { title?: string }) { return { title: title ?? 'Image' } },
+          },
+        },
+      ],
+    }),
+    defineField({
       name: 'order',
       title: 'Display Order',
       type: 'number',
