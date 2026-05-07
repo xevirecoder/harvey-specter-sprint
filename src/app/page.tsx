@@ -18,6 +18,7 @@ const aboutPhotoUrl = "/image 26.png";
 type PortfolioItem = {
   _id: string;
   title: string;
+  slug: string | null;
   tags: string[];
   imageUrl: string | null;
   desktopCardHeight: number;
@@ -40,6 +41,7 @@ type Testimonial = {
 type NewsItem = {
   _id: string;
   title: string;
+  slug: string | null;
   description: string;
   imageUrl: string;
   link: string | null;
@@ -58,6 +60,7 @@ const PORTFOLIO_QUERY = defineQuery(`
   *[_type == "portfolio"] | order(order asc) {
     _id,
     title,
+    "slug": slug.current,
     tags,
     "imageUrl": select(
       defined(coverImage.asset) => coverImage.asset->url,
@@ -87,6 +90,7 @@ const NEWS_QUERY = defineQuery(`
   *[_type == "news"] | order(order asc) {
     _id,
     title,
+    "slug": slug.current,
     description,
     imageUrl,
     link,

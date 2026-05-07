@@ -7,6 +7,7 @@ import MagneticButton from "./MagneticButton";
 type PortfolioItem = {
   _id: string;
   title: string;
+  slug: string | null;
   tags: string[];
   imageUrl: string | null;
   desktopCardHeight: number;
@@ -112,15 +113,16 @@ export default function PortfolioSection({ projects: p }: { projects: PortfolioI
       {/* Mobile: stacked cards */}
       <div className="md:hidden flex flex-col gap-6">
         {p.map((project) => (
-          <PortfolioCard
-            key={project._id}
-            imageUrl={project.imageUrl ?? ""}
-            alt={project.title}
-            height={390}
-            tags={project.tags}
-            title={project.title}
-            titleSize="text-[24px]"
-          />
+          <a key={project._id} href={project.slug ? `/projects/${project.slug}` : undefined}>
+            <PortfolioCard
+              imageUrl={project.imageUrl ?? ""}
+              alt={project.title}
+              height={390}
+              tags={project.tags}
+              title={project.title}
+              titleSize="text-[24px]"
+            />
+          </a>
         ))}
 
         {/* Mobile CTA */}
@@ -149,20 +151,24 @@ export default function PortfolioSection({ projects: p }: { projects: PortfolioI
 
         {/* Left column */}
         <div className="flex-1 self-stretch flex flex-col justify-between min-w-0">
-          <PortfolioCard
-            imageUrl={p[0]?.imageUrl ?? ""}
-            alt={p[0]?.title ?? ""}
-            height={p[0]?.desktopCardHeight ?? 744}
-            tags={p[0]?.tags ?? []}
-            title={p[0]?.title ?? ""}
-          />
-          <PortfolioCard
-            imageUrl={p[1]?.imageUrl ?? ""}
-            alt={p[1]?.title ?? ""}
-            height={p[1]?.desktopCardHeight ?? 699}
-            tags={p[1]?.tags ?? []}
-            title={p[1]?.title ?? ""}
-          />
+          <a href={p[0]?.slug ? `/projects/${p[0].slug}` : undefined}>
+            <PortfolioCard
+              imageUrl={p[0]?.imageUrl ?? ""}
+              alt={p[0]?.title ?? ""}
+              height={p[0]?.desktopCardHeight ?? 744}
+              tags={p[0]?.tags ?? []}
+              title={p[0]?.title ?? ""}
+            />
+          </a>
+          <a href={p[1]?.slug ? `/projects/${p[1].slug}` : undefined}>
+            <PortfolioCard
+              imageUrl={p[1]?.imageUrl ?? ""}
+              alt={p[1]?.title ?? ""}
+              height={p[1]?.desktopCardHeight ?? 699}
+              tags={p[1]?.tags ?? []}
+              title={p[1]?.title ?? ""}
+            />
+          </a>
 
           {/* Desktop CTA */}
           <div className="flex gap-3 items-stretch w-[465px]">
@@ -187,20 +193,24 @@ export default function PortfolioSection({ projects: p }: { projects: PortfolioI
 
         {/* Right column — offset top by 240px */}
         <div className="flex-1 flex flex-col gap-[117px] pt-[240px] min-w-0">
-          <PortfolioCard
-            imageUrl={p[2]?.imageUrl ?? ""}
-            alt={p[2]?.title ?? ""}
-            height={p[2]?.desktopCardHeight ?? 699}
-            tags={p[2]?.tags ?? []}
-            title={p[2]?.title ?? ""}
-          />
-          <PortfolioCard
-            imageUrl={p[3]?.imageUrl ?? ""}
-            alt={p[3]?.title ?? ""}
-            height={p[3]?.desktopCardHeight ?? 744}
-            tags={p[3]?.tags ?? []}
-            title={p[3]?.title ?? ""}
-          />
+          <a href={p[2]?.slug ? `/projects/${p[2].slug}` : undefined}>
+            <PortfolioCard
+              imageUrl={p[2]?.imageUrl ?? ""}
+              alt={p[2]?.title ?? ""}
+              height={p[2]?.desktopCardHeight ?? 699}
+              tags={p[2]?.tags ?? []}
+              title={p[2]?.title ?? ""}
+            />
+          </a>
+          <a href={p[3]?.slug ? `/projects/${p[3].slug}` : undefined}>
+            <PortfolioCard
+              imageUrl={p[3]?.imageUrl ?? ""}
+              alt={p[3]?.title ?? ""}
+              height={p[3]?.desktopCardHeight ?? 744}
+              tags={p[3]?.tags ?? []}
+              title={p[3]?.title ?? ""}
+            />
+          </a>
         </div>
       </div>
 

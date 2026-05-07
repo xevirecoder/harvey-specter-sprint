@@ -42,21 +42,28 @@ export default function TestimonialsDesktop({ testimonials }: { testimonials: Te
     const section = sectionRef.current;
     if (!section) return;
 
-    const cards = gsap.utils.toArray<HTMLElement>(".tcard", section);
+    const init = () => {
+      const cards = gsap.utils.toArray<HTMLElement>(".tcard", section);
+      if (!cards.length) return;
 
-    cards.forEach((card, i) => {
-      gsap.to(card, {
-        y: DRIFT_Y[i % DRIFT_Y.length],
-        ease: "none",
-        scrollTrigger: {
-          trigger: section,
-          start: "top bottom",
-          end: "bottom top",
-          scrub: 1.5,
-        },
+      cards.forEach((card, i) => {
+        gsap.to(card, {
+          y: DRIFT_Y[i % DRIFT_Y.length],
+          ease: "none",
+          scrollTrigger: {
+            trigger: section,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 1.5,
+          },
+        });
       });
-    });
-  }, { scope: sectionRef });
+    };
+
+    // Defer until after paint so ScrollTrigger can measure bounds
+    const raf = requestAnimationFrame(init);
+    return () => cancelAnimationFrame(raf);
+  }, { scope: sectionRef, dependencies: [testimonials.length] });
 
   return (
     <div ref={sectionRef} className="hidden md:block relative h-[940px]">

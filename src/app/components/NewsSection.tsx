@@ -10,6 +10,7 @@ gsap.registerPlugin(ScrollTrigger, useGSAP);
 type NewsItem = {
   _id: string;
   title: string;
+  slug: string | null;
   description: string;
   imageUrl: string;
   link: string | null;
@@ -79,7 +80,7 @@ export default function NewsSection({ articles }: { articles: NewsItem[] }) {
         </h2>
         <div className="flex gap-4 overflow-x-auto pb-2 -mr-4">
           {articles.map((article) => (
-            <div key={article._id} className="news-mobile-card shrink-0 w-[300px] flex flex-col gap-4">
+            <a key={article._id} href={article.slug ? `/news/${article.slug}` : undefined} className="news-mobile-card shrink-0 w-[300px] flex flex-col gap-4">
               <div className="relative h-[398px] overflow-hidden shrink-0">
                 <img
                   src={article.imageUrl}
@@ -90,22 +91,15 @@ export default function NewsSection({ articles }: { articles: NewsItem[] }) {
               <p className="font-[family-name:var(--font-inter)] font-normal text-[14px] text-[#1f1f1f] leading-[1.3] tracking-[-0.04em]">
                 {article.description}
               </p>
-              {article.link && (
-                <a
-                  href={article.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="border-b border-black flex items-center gap-[10px] py-[4px] w-fit shrink-0"
-                >
-                  <span className="font-[family-name:var(--font-inter)] font-medium text-[14px] text-black tracking-[-0.04em]">
-                    Read more
-                  </span>
-                  <svg className="w-[18px] h-[18px] shrink-0 -rotate-90" viewBox="0 0 18 18" fill="none" aria-hidden="true">
-                    <path d="M9 3.75L9 14.25M9 14.25L13.5 9.75M9 14.25L4.5 9.75" stroke="black" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </a>
-              )}
-            </div>
+              <span className="border-b border-black flex items-center gap-[10px] py-[4px] w-fit shrink-0">
+                <span className="font-[family-name:var(--font-inter)] font-medium text-[14px] text-black tracking-[-0.04em]">
+                  Read more
+                </span>
+                <svg className="w-[18px] h-[18px] shrink-0 -rotate-90" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+                  <path d="M9 3.75L9 14.25M9 14.25L13.5 9.75M9 14.25L4.5 9.75" stroke="black" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </span>
+            </a>
           ))}
         </div>
       </div>
@@ -126,7 +120,8 @@ export default function NewsSection({ articles }: { articles: NewsItem[] }) {
           {articles.slice(0, 3).map((article, i) => (
             <Fragment key={article._id}>
               {i > 0 && <div className="self-stretch w-px bg-black mx-[15px] shrink-0" />}
-              <div
+              <a
+                href={article.slug ? `/news/${article.slug}` : undefined}
                 className={`news-desktop-card w-[353px] shrink-0 flex flex-col gap-4 ${i === 1 ? "pt-[120px]" : "h-[581px]"}`}
               >
                 <div className="relative h-[469px] overflow-hidden shrink-0">
@@ -139,22 +134,15 @@ export default function NewsSection({ articles }: { articles: NewsItem[] }) {
                 <p className="flex-1 font-[family-name:var(--font-inter)] font-normal text-[14px] text-[#1f1f1f] leading-[1.3] tracking-[-0.04em]">
                   {article.description}
                 </p>
-                {article.link && (
-                  <a
-                    href={article.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="border-b border-black flex items-center gap-[10px] py-[4px] w-fit shrink-0"
-                  >
-                    <span className="font-[family-name:var(--font-inter)] font-medium text-[14px] text-black tracking-[-0.04em]">
-                      Read more
-                    </span>
-                    <svg className="w-[18px] h-[18px] shrink-0 -rotate-90" viewBox="0 0 18 18" fill="none" aria-hidden="true">
-                      <path d="M9 3.75L9 14.25M9 14.25L13.5 9.75M9 14.25L4.5 9.75" stroke="black" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </a>
-                )}
-              </div>
+                <span className="border-b border-black flex items-center gap-[10px] py-[4px] w-fit shrink-0">
+                  <span className="font-[family-name:var(--font-inter)] font-medium text-[14px] text-black tracking-[-0.04em]">
+                    Read more
+                  </span>
+                  <svg className="w-[18px] h-[18px] shrink-0 -rotate-90" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+                    <path d="M9 3.75L9 14.25M9 14.25L13.5 9.75M9 14.25L4.5 9.75" stroke="black" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </span>
+              </a>
             </Fragment>
           ))}
         </div>
