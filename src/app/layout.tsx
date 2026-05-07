@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, DM_Sans, Inter, Playfair_Display } from "next/font/google";
 import { SanityLive } from "@/sanity/lib/live";
+import MouseTrail from "./components/MouseTrail";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -46,6 +47,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         {children}
+        <MouseTrail />
         <SanityLive />
       </body>
     </html>

@@ -7,7 +7,13 @@ import MagneticButton from "./MagneticButton";
 
 gsap.registerPlugin(useGSAP);
 
-const navLinks = ["About", "Services", "Projects", "News", "Contact"];
+const navLinks: { label: string; href: string }[] = [
+  { label: "About",    href: "/about"    },
+  { label: "Services", href: "/services"  },
+  { label: "Projects", href: "/projects"  },
+  { label: "News",     href: "/news"     },
+  { label: "Contact",  href: "/#contact" },
+];
 
 export default function HeroNav() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -91,21 +97,21 @@ export default function HeroNav() {
         ref={fixedNavRef}
         className={`fixed top-0 left-0 right-0 z-50 flex shrink-0 items-center justify-between py-6 px-4 md:px-8 transition-colors duration-300 ${isDark ? "text-white" : "text-black"}`}
       >
-        <span className="font-[family-name:var(--font-inter)] font-semibold text-base capitalize tracking-[-0.04em]">
+        <a href="/" className="font-[family-name:var(--font-inter)] font-semibold text-base capitalize tracking-[-0.04em]">
           H.Studio
-        </span>
+        </a>
 
         {/* Desktop links */}
         <div className="hidden md:flex items-center gap-14 font-[family-name:var(--font-inter)] font-semibold text-base capitalize tracking-[-0.04em]">
-          {navLinks.map((link) => (
+          {navLinks.map(({ label, href }) => (
             <a
-              key={link}
-              href={`#${link.toLowerCase()}`}
+              key={label}
+              href={href}
               className="relative pb-0.5"
               onMouseEnter={onLinkEnter}
               onMouseLeave={onLinkLeave}
             >
-              {link}
+              {label}
               <span className="nav-underline absolute bottom-0 left-0 h-px w-0 bg-current" />
             </a>
           ))}
@@ -149,9 +155,9 @@ export default function HeroNav() {
             className="flex shrink-0 items-center justify-between"
             style={{ opacity: 0 }}
           >
-            <span className="font-[family-name:var(--font-inter)] font-semibold text-base capitalize tracking-[-0.04em] text-white">
+            <a href="/" className="font-[family-name:var(--font-inter)] font-semibold text-base capitalize tracking-[-0.04em] text-white">
               H.Studio
-            </span>
+            </a>
             <button aria-label="Close navigation" onClick={closeMenu} className="text-white">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
                 <path d="M18 6L6 18M6 6l12 12" />
@@ -160,16 +166,16 @@ export default function HeroNav() {
           </div>
 
           <div className="flex flex-1 flex-col justify-center gap-8">
-            {navLinks.map((link, i) => (
+            {navLinks.map(({ label, href }, i) => (
               <a
-                key={link}
+                key={label}
                 ref={(el) => { menuLinksRef.current[i] = el; }}
-                href={`#${link.toLowerCase()}`}
+                href={href}
                 onClick={closeMenu}
                 className="font-[family-name:var(--font-inter)] font-light text-[48px] capitalize tracking-[-0.04em] text-white leading-none"
                 style={{ opacity: 0 }}
               >
-                {link}
+                {label}
               </a>
             ))}
           </div>

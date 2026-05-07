@@ -24,6 +24,12 @@ export const newsType = defineType({
       validation: (r) => r.required(),
     }),
     defineField({
+      name: 'slug',
+      title: 'Slug',
+      type: 'slug',
+      options: { source: 'title' },
+    }),
+    defineField({
       name: 'description',
       title: 'Short description',
       type: 'text',
@@ -37,8 +43,14 @@ export const newsType = defineType({
       validation: (r) => r.required(),
     }),
     defineField({
+      name: 'body',
+      title: 'Article body',
+      type: 'array',
+      of: [{ type: 'block' }],
+    }),
+    defineField({
       name: 'link',
-      title: 'Read-more URL',
+      title: 'External source URL',
       type: 'url',
     }),
     defineField({
